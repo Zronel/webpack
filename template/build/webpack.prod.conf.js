@@ -61,9 +61,10 @@ const webpackConfig = merge(baseWebpackConfig, {
     // generate dist index.html with correct asset hash for caching.
     // you can customize output by editing /index.html
     // see https://github.com/ampedandwired/html-webpack-plugin
-    {{#if_or multihtml}}
     new HtmlWebpackPlugin({
-      filename: config.build.index,
+      filename: {{#if_or unit e2e}}process.env.NODE_ENV === 'testing'
+        ? 'index.html'
+        : {{/if_or}}config.build.index,
       template: 'index.html',
       inject: true,
       minify: {
@@ -76,7 +77,6 @@ const webpackConfig = merge(baseWebpackConfig, {
       // necessary to consistently work with multiple chunks via CommonsChunkPlugin
       chunksSortMode: 'dependency'
     }),
-    {{/if_or}}
     // keep module.id stable when vender modules does not change
     new webpack.HashedModuleIdsPlugin(),
     // enable scope hoisting
