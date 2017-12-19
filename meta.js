@@ -36,6 +36,10 @@ module.exports = {
       "type": "string",
       "message": "Author"
     },
+    "multihtml": {
+      "type": "confirm",
+      "message": "Is multihtml?"
+    },
     "build": {
       "type": "list",
       "message": "Vue build",

@@ -19,6 +19,9 @@ const createLintingRule = () => ({
   }
 })
 
+{{#multihtml}}
+var entrys = helper.getEntrys('./src/app')
+{{/multihtml}}
 module.exports = {
   context: path.resolve(__dirname, '../'),
   entry: {
