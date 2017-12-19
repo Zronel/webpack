@@ -100,16 +100,17 @@ var baseConf = {
       }
     ]
   },
-  {{#multihtml}}
   plugins: [
     new webpack
       .optimize
       .CommonsChunkPlugin({
         name: 'vendor',
+        {{#multihtml}}
         chunks: Object.keys(entrys),
+        {{/multihtml}}
         minChunks: function (module, count) {
           // any required modules inside node_modules are extracted to vendor
-          return (module.resource && /\.js$/.test(module.resource) && module.resource.indexOf(path.join(__dirname, '../node_modules')) === 0 && count > 8)
+          return (module.resource && /\.js$/.test(module.resource) && module.resource.indexOf(path.join(__dirname, '../node_modules')) === 0 {{#multihtml}} && count > 8 {{/multihtml}})
         }
       }),
     // happypack plugins
@@ -125,7 +126,6 @@ var baseConf = {
     'paths': true
     })
   ],
-  {{/multihtml}}
   node: {
     // prevent webpack from injecting useless setImmediate polyfill because Vue
     // source contains it (although only uses it if it's native).
@@ -139,5 +139,46 @@ var baseConf = {
     child_process: 'empty'
   }
 }
+
+{{#multihtml}}
+var pageUrl = {}
+// 遍历生成HTML配置，需要入口文件名和HTML文件名相对应
+var envTemp = process.env.NODE_ENV === 'production' ? 'production' : 'development';
+Object
+  .keys(entrys)
+  .forEach(function (cur) {
+    var temp = cur.split('_')
+    var fileName = temp[0] + '.html'
+    if (temp[1]) fileName = temp[0] + '/' + temp[1].toLowerCase() + '.html'
+    // URL绝对地址
+    pageUrl[cur] = config.host[envTemp].urlHost + fileName
+    // html配置
+    baseConf
+      .plugins
+      .push(
+      // generate dist index.html with correct asset hash for caching. you can
+      // customize output by editing /index.html see
+      // https://github.com/ampedandwired/html-webpack-plugin
+      new HtmlWebpackPlugin({
+        filename: process.env === 'development'
+          ? path.resolve(__dirname, fileName)
+          : path.resolve(__dirname, '../dist/' + fileName),
+        template: 'index.html',
+        inject: true,
+        minify: {
+          removeComments: true,
+          collapseWhitespace: false,
+          removeAttributeQuotes: true
+          // more options: https://github.com/kangax/html-minifier#options-quick-reference
+        },
+        // necessary to consistently work with multiple chunks via CommonsChunkPlugin
+        chunksSortMode: 'dependency',
+        multihtmlCache: true,
+        chunks: ['manifest', 'vendor', cur]
+      }))
+  })
+
+helper.setPageUrl(pageUrl)
+{{/multihtml}}
 
 module.exports = baseConf
