@@ -36,6 +36,10 @@ module.exports = {
       "type": "string",
       "message": "Author"
     },
+    "multihtml": {
+      "type": "confirm",
+      "message": "Is multihtml?"
+    },
     "build": {
       "type": "list",
       "message": "Vue build",
@@ -117,7 +121,7 @@ module.exports = {
     ".eslintrc.js": "lint",
     ".eslintignore": "lint",
     "config/test.env.js": "unit || e2e",
-    "build/webpack.test.conf.js": "e2e || (unit && runner === 'karma')",
+    "build/webpack.test.conf.js": "unit && runner === 'karma'",
     "test/unit/**/*": "unit",
     "test/unit/index.js": "unit && runner === 'karma'",
     "test/unit/jest.conf.js": "unit && runner === 'jest'",

@@ -1,12 +1,21 @@
 'use strict'
-const path = require('path')
-const utils = require('./utils')
-const config = require('../config')
-const vueLoaderConfig = require('./vue-loader.conf')
+var path = require('path')
+var utils = require('./utils')
+var config = require('../config')
+var vueLoaderConfig = require('./vue-loader.conf')
+var helper = require('./helper')
+var webpack = require('webpack')
+var HtmlWebpackPlugin = require('html-webpack-plugin-multihtml')
+var LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
+
+// inject happypack accelerate packing for vue-loader
+Object.assign(vueLoaderConfig.loaders, {
+  js: 'happypack/loader?id=happy-babel-vue'
+})
 
 const createLintingRule = () => ({
   test: /\.(js|vue)$/,
@@ -19,10 +28,17 @@ const createLintingRule = () => ({
   }
 })
 
-module.exports = {
+{{#multihtml}}
+var entrys = helper.getEntrys('./src/app')
+{{/multihtml}}
+var baseConf = {
   context: path.resolve(__dirname, '../'),
   entry: {
+    {{#multihtml}}
+    app: entrys
+    {{else}}
     app: './src/main.js'
+    {{/multihtml}}
   },
   output: {
     path: config.build.assetsRoot,
@@ -37,7 +53,10 @@ module.exports = {
       {{#if_eq build "standalone"}}
       'vue$': 'vue/dist/vue.esm.js',
       {{/if_eq}}
-      '@': resolve('src'),
+      'src': resolve('src'),
+      'assets': resolve('src/assets'),
+      'components': resolve('src/components'),
+      'conf': resolve('src/conf')
     }
   },
   module: {
@@ -52,14 +71,14 @@ module.exports = {
       },
       {
         test: /\.js$/,
-        loader: 'babel-loader',
+        loader: 'happypack/loader?id=happy-babel-js',
         include: [resolve('src'), resolve('test')]
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
         loader: 'url-loader',
         options: {
-          limit: 10000,
+          limit: 2500,
           name: utils.assetsPath('img/[name].[hash:7].[ext]')
         }
       },
@@ -75,12 +94,38 @@ module.exports = {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
         loader: 'url-loader',
         options: {
-          limit: 10000,
+          limit: 1000,
           name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
         }
       }
     ]
   },
+  {{#multihtml}}
+  plugins: [
+    new webpack
+      .optimize
+      .CommonsChunkPlugin({
+        name: 'vendor',
+        chunks: Object.keys(entrys),
+        minChunks: function (module, count) {
+          // any required modules inside node_modules are extracted to vendor
+          return (module.resource && /\.js$/.test(module.resource) && module.resource.indexOf(path.join(__dirname, '../node_modules')) === 0 && count > 8)
+        }
+      }),
+    // happypack plugins
+    helper.createHappyPlugin('happy-babel-js', ['babel-loader?cacheDirectory=true']),
+    helper.createHappyPlugin('happy-babel-vue', ['babel-loader?cacheDirectory=true']),
+    // extract webpack runtime and module manifest to its own file in order to
+    // prevent vendor hash from being updated whenever app bundle is updated
+    new webpack
+      .optimize
+      .CommonsChunkPlugin({name: 'manifest', chunks: ['vendor']}),
+    new LodashModuleReplacementPlugin({
+    'collections': true,
+    'paths': true
+    })
+  ],
+  {{/multihtml}}
   node: {
     // prevent webpack from injecting useless setImmediate polyfill because Vue
     // source contains it (although only uses it if it's native).
@@ -94,3 +139,5 @@ module.exports = {
     child_process: 'empty'
   }
 }
+
+module.exports = baseConf
