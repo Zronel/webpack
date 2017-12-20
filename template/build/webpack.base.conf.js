@@ -143,40 +143,33 @@ var baseConf = {
 {{#multihtml}}
 var pageUrl = {}
 // 遍历生成HTML配置，需要入口文件名和HTML文件名相对应
-var envTemp = process.env.NODE_ENV === 'production' ? 'production' : 'development';
-Object
-  .keys(entrys)
-  .forEach(function (cur) {
-    var temp = cur.split('_')
-    var fileName = temp[0] + '.html'
-    if (temp[1]) fileName = temp[0] + '/' + temp[1].toLowerCase() + '.html'
-    // URL绝对地址
-    pageUrl[cur] = config.host[envTemp].urlHost + fileName
-    // html配置
-    baseConf
-      .plugins
-      .push(
-      // generate dist index.html with correct asset hash for caching. you can
-      // customize output by editing /index.html see
-      // https://github.com/ampedandwired/html-webpack-plugin
-      new HtmlWebpackPlugin({
-        filename: process.env === 'development'
-          ? path.resolve(__dirname, fileName)
-          : path.resolve(__dirname, '../dist/' + fileName),
-        template: 'index.html',
-        inject: true,
-        minify: {
-          removeComments: true,
-          collapseWhitespace: false,
-          removeAttributeQuotes: true
-          // more options: https://github.com/kangax/html-minifier#options-quick-reference
-        },
-        // necessary to consistently work with multiple chunks via CommonsChunkPlugin
-        chunksSortMode: 'dependency',
-        multihtmlCache: true,
-        chunks: ['manifest', 'vendor', cur]
-      }))
-  })
+var envConfig = process.env.NODE_ENV === 'production' ? require('../config/prod.env') : require('../config/dev.env');
+
+Object.keys(entrys).forEach(function (cur) {
+  var temp = cur.split('_')
+  var fileName = temp[0] + '.html'
+  if (temp[1]) fileName = temp[0] + '/' + temp[1].toLowerCase() + '.html'
+  // URL绝对地址
+  pageUrl[cur] = envConfig.urlHost + fileName
+  // html配置
+  baseConf.plugins.push(
+    new HtmlWebpackPlugin({
+      filename: process.env === 'development' ? path.resolve(__dirname, fileName) : path.resolve(__dirname, '../dist/' + fileName),
+      template: 'index.html',
+      inject: true,
+      minify: {
+        removeComments: true,
+        collapseWhitespace: false,
+        removeAttributeQuotes: true
+        // more options: https://github.com/kangax/html-minifier#options-quick-reference
+      },
+      // necessary to consistently work with multiple chunks via CommonsChunkPlugin
+      chunksSortMode: 'dependency',
+      multihtmlCache: true,
+      chunks: ['manifest', 'vendor', cur]
+    })
+  )
+})
 
 helper.setPageUrl(pageUrl)
 {{/multihtml}}
