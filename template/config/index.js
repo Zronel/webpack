@@ -12,6 +12,10 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {},
 
+    // is run https true or 
+    // {key: fs.readFileSync("/path/to/server.key"), cert: fs.readFileSync("/path/to/server.crt"), ca: fs.readFileSync("/path/to/ca.pem")}
+    https: false, 
+
     // Various Dev Server settings
     host: 'm.zhuanzhuan.58.com', // can be overwritten by process.env.HOST
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
