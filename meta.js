@@ -40,6 +40,10 @@ module.exports = {
       "type": "confirm",
       "message": "Is multihtml?"
     },
+    "jsonServer": {
+      "type": "confirm",
+      "message": "use jsonServer?"
+    },
     "build": {
       "type": "list",
       "message": "Vue build",
@@ -129,7 +133,8 @@ module.exports = {
     "test/unit/specs/index.js": "unit && runner === 'karma'",
     "test/unit/setup.js": "unit && runner === 'jest'",
     "test/e2e/**/*": "e2e",
-    "src/router/**/*": "router"
+    "src/router/**/*": "router",
+    "src/api/**/*": "jsonServer"
   },
   "complete": function (data) {
     const packageJsonFile = path.join(

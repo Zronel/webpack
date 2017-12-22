@@ -1,0 +1,6 @@
+{
+  "/*\\?:test": "/$1",
+  "/api/*": "/$1",
+  "/list/:name": "/list-:name",
+  "/index/:name": "/index-:name"
+}

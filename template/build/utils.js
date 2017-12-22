@@ -55,18 +55,20 @@ exports.cssLoaders = function (options) {
     }
   }
 
+  var sassResourcesLoader = sassResources ? {
+    loader: 'sass-resources-loader',
+    options: {
+      resources: sassResources
+    }
+  } : null
+
   // https://vue-loader.vuejs.org/en/configurations/extract-css.html
   return {
     css: generateLoaders(),
     postcss: generateLoaders(),
     less: generateLoaders('less'),
-    sass: generateLoaders('sass', { indentedSyntax: true }),
-    scss: generateLoaders('sass').concat({
-      loader: 'sass-resources-loader',
-      options: {
-        resources: sassResources
-      }
-    }),
+    sass: generateLoaders('sass', { indentedSyntax: true }).concat(sassResourcesLoader),
+    scss: generateLoaders('sass').concat(sassResourcesLoader),
     stylus: generateLoaders('stylus'),
     styl: generateLoaders('stylus')
   }
