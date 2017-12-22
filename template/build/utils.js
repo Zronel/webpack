@@ -4,7 +4,7 @@ const config = require('../config')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const packageConfig = require('../package.json')
 
-const sassResources = process.env.NODE_ENV === 'production' ? config.dev.sassResources : config.build.sassResources
+const sassResources = process.env.NODE_ENV === 'production' ? config.build.sassResources : config.dev.sassResources
 exports.assetsPath = function (_path) {
   const assetsSubDirectory = process.env.NODE_ENV === 'production'
     ? config.build.assetsSubDirectory
