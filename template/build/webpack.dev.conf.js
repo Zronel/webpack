@@ -25,8 +25,8 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     historyApiFallback: true,
     hot: true,
     compress: true,
-    host: HOST || config.dev.host,
-    port: PORT || config.dev.port,
+    host: config.dev.host,
+    port: config.dev.port,
     open: config.dev.autoOpenBrowser,
     overlay: config.dev.errorOverlay ? { warnings: false, errors: true } : false,
     publicPath: config.dev.assetsPublicPath,
@@ -54,7 +54,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 })
 
 module.exports = new Promise((resolve, reject) => {
-  portfinder.basePort = (openHttps || config.dev.https)? 443 : config.dev.port
+  portfinder.basePort = (openHttps || config.dev.https) ? 443 : config.dev.port
   portfinder.getPort((err, port) => {
     if (err) {
       reject(err)

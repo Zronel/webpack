@@ -33,7 +33,7 @@ var entrys = helper.getEntrys('./src/app')
 {{/multihtml}}
 var baseConf = {
   context: path.resolve(__dirname, '../'),
-  entry: {{#multihtml}}app: entrys{{else}}{ app: './src/main.js' }{{/multihtml}},
+  entry: {{#multihtml}}entrys{{else}}{ app: './src/main.js' }{{/multihtml}},
   output: {
     path: config.build.assetsRoot,
     filename: '[name].js',
