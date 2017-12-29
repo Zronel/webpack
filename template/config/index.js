@@ -21,6 +21,7 @@ module.exports = {
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,
+    sassResources: false
     notifyOnErrors: true,
     poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
 
@@ -60,6 +61,7 @@ module.exports = {
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
+    sassResources: false,
 
     /**
      * Source Maps
